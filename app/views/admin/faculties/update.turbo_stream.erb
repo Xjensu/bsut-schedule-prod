@@ -1,0 +1,10 @@
+<%= turbo_stream.replace @faculty do %>
+  <%= render @faculty %>
+<% end %>
+
+<%= turbo_stream.update 'flash' do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    Faculty was successfully updated.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

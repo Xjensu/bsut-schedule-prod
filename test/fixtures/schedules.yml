@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  academic_period: one
+  student_group: one
+  subject: one
+  teacher: one
+  classroom: one
+  day_of_week: 1
+  start_time: 2025-07-14 23:21:15
+  lesson: one
+
+two:
+  academic_period: two
+  student_group: two
+  subject: two
+  teacher: two
+  classroom: two
+  day_of_week: 1
+  start_time: 2025-07-14 23:21:15
+  lesson: two

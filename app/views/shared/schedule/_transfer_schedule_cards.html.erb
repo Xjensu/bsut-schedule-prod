@@ -1,0 +1,29 @@
+<div class="row">
+  <% default_times.each do |time| %>
+    <% 
+      if schedules.present?
+        # Преобразуем время в строку формата "HH:MM" для сравнения
+        time_str = time
+        
+        # Ищем записи с совпадающим временем
+        regular_schedule = schedules.select do |schedule|
+          schedule['start_time'].strftime('%H:%M') == time_str.to_s
+        end
+        
+        # Дополняем массив nil до нужного размера (2 элемента)
+        regular_schedule += [nil] * (2 - regular_schedule.size)
+      else
+        regular_schedule = [nil, nil]
+      end
+    %>
+
+    <div class="col-md-2">
+      <%= time %>
+    </div>
+
+    <div class="col-md-9 pb-4">
+      <%= render partial: card_partial, collection: regular_schedule, as: :schedule, 
+           locals: { param: param.merge(under:false, time: time), card_stimulus:card_stimulus, card_attributes: card_attributes } %>
+    </div>
+  <% end %>
+</div>

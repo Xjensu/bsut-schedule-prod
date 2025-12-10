@@ -1,0 +1,134 @@
+<%= link_to "Назад",  admin_faculty_student_groups_path( StudentGroup.find(params[:group_id]).faculty_id ), :class => "btn btn-primary" %>
+
+<div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" id="transfersList" aria-labelledby="offcanvasScrollingLabel"
+         data-controller="resizable" data-resizable-min-width-value="300" data-resizable-max-width-value="600" data-resizable-target="offcanvas" style="width: 300px">
+  <div class="offcanvas-header">
+    <p>Список изменений</p>
+    <%# <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button> %>
+  </div>
+  <div class="offcanvas-body" data-controller="transfer-schedule transfer-changes" data-transfer-schedule-group-id-value="<%= params[:group_id] %>">
+    <div data-toggle-target="content">
+      <div class="d-flex align-items-center justify-content-between">
+        <span>transfers_sourceDate</span>
+        <button data-action="toggle#toggle" class="btn btn-link">
+          <i data-toggle-target="icon" class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+      <div class="mt-2">
+        <%= turbo_frame_tag "transfers_sourceDate" do %>
+          <!-- Контент для добавления -->
+        <% end %>
+       </div>
+    </div>
+    <br/>
+    <div data-toggle-target="content">
+      <div class="d-flex align-items-center justify-content-between">
+        <span>transfers_targetDate</span>
+        <button data-action="toggle#toggle" class="btn btn-link">
+          <i data-toggle-target="icon" class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+      <div class="mt-2">
+        <%= turbo_frame_tag "transfers_targetDate" do %>
+          <!-- Контент для добавления -->
+        <% end %>
+      </div>
+    </div>
+   </div>
+  <div class="offcanvas-resizer-right" 
+    data-resizable-target="resizer"
+    data-action="mousedown->resizable#startResize"></div>
+</div>
+
+<div class="container" data-controller="date-change"
+     data-date-change-group-id-value="<%= params[:group_id] %>"
+     data-date-change-course-value="<%= params[:course] %>"
+     data-date-change-academic-period-id-value="<%= params[:academic_period_id] %>">
+  <%= form_with url: admin_transfer_schedules_path, method: :get, data: { turbo_frame: "_top" } do |f| %>
+    <%= hidden_field_tag :group_id, params[:group_id]%>
+    <%= hidden_field_tag :course, params[:course] %>
+    <%= hidden_field_tag :academic_period_id, params[:academic_period_id] %>
+
+    <div class="row">
+      <div class="col-sm">
+        <div class="card">
+          <div class="card-body" >
+            <h5 class="card-title">Перенести с</h5>
+            <%= f.date_field :source_date, value: @source_date, min: @academic_period.start_date,  max: @academic_period.end_date,
+                  class: "form-control mb-3", data: { action: "change->date-change#handleDateChange", "date-change-target": "sourceDate" } %>
+          </div>
+          <div class="position-relative border" style="height: 55vh; min-height: 200px;">
+            <div class="h-100 overflow-auto" class="col-md-9 pb-4 transfer-dropzone" data-controller="transfer-dropzone" data-action="dragover->transfer-dropzone#handleDragOver drop->transfer-dropzone#handleDrop dragleave->transfer-dropzone#handleDragLeave"
+              >
+              <%= turbo_frame_tag "sourceDate" do %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Центральная колонка с кнопками -->
+      <div class="d-flex col-sm-1 justify-content-center align-items-center flex-column">
+        <button type="submit" class="btn btn-primary mb-2" name="direction" value="forward">
+          ->
+        </button>
+        <button type="submit" class="btn btn-primary" name="direction" value="backward">
+          <-
+        </button>
+      </div>
+
+      <!-- Колонка с целевой датой -->
+      <div class="col-sm">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Перенести на</h5>
+            <%= f.date_field :target_date, 
+                  value: @target_date,
+                  min: @academic_period.start_date,
+                  max: @academic_period.end_date,
+                  class: "form-control mb-3", data: { action: "change->date-change#handleDateChange", "date-change-target": "targetDate" } %>
+          </div>
+          <div class="position-relative border" style="height: 55vh; min-height: 200px;">
+            <div class="h-100 overflow-auto" class="col-md-9 pb-4 transfer-dropzone" data-controller="transfer-dropzone" data-action="dragover->transfer-dropzone#handleDragOver drop->transfer-dropzone#handleDrop dragleave->transfer-dropzone#handleDragLeave"
+              >
+              <%= turbo_frame_tag "targetDate" do %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="border border-danger rounded-3 d-flex justify-content-center align-items-center flex-column mx-5 mt-5 p-2" 
+        id="trash-bin"
+        data-controller="trash-bin"
+        data-action="dragover->trash-bin#handleDragOver 
+                      dragleave->trash-bin#handleDragLeave
+                      drop->trash-bin#handleDrop">
+      <i class="bi bi-trash fs-1 text-danger"></i>
+      <span>Перетащите сюда чтобы удалить</span>
+    </div>
+  <% end %>
+
+</div>
+
+
+<div id="editPanel" class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" 
+         tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel"
+         data-controller="resizable" data-resizable-min-width-value="300" data-resizable-max-width-value="800" data-resizable-target="offcanvas" data-resizable-direction-value="end">
+  <div class="offcanvas-resizer" 
+       data-resizable-target="resizer"
+       data-action="mousedown->resizable#startResize"></div>
+    <div class="offcanvas-header">
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
+    </div>
+    <div class="offcanvas-body">
+      <%= turbo_frame_tag "schedule_editor" do %>
+        <div class="text-center p-3">
+          <status class="spinner-border">
+            <span class="visually-hidden">Загрузка...</span>
+          </status>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

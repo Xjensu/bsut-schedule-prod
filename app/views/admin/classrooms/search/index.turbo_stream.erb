@@ -1,0 +1,9 @@
+<%= turbo_stream.update "schedule_classrooms" do %>
+  <div class="list-group">
+    <% if @classrooms.any? %>
+      <%= render partial: 'classroom', collection: @classrooms, as: :classroom %>
+    <% else %>
+      <div class="list-group-item">Аудитории не найдены</div>
+    <% end %>
+  </div>
+<% end %>

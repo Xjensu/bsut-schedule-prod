@@ -1,0 +1,15 @@
+<%= turbo_stream.replace @target do %>
+    <%= turbo_frame_tag "#{@target}" do %>
+        <%= @schedule_renderer.render %>
+    <% end %>
+<% end %>
+
+
+<%= turbo_stream.replace "transfers_#{@target}" do %>
+  <%= turbo_frame_tag "transfers_#{@target}" do %>
+    <% @changes.each do |change| %>
+      <%= render partial: 'change_card', locals: { method: change[:action], target: @target, change: change[:record] } %>
+    <% end %>
+    <%# <%= render partial: 'change_card', collection: @added, as: :change, locals: { method: :add, target: @target } %>
+  <% end %>
+<% end %>

@@ -1,0 +1,31 @@
+<%= link_to "Назад", :back, data: { turbo: false }, class: "btn btn-outline-secondary" %>
+
+<div class="mb-4" data-controller="classroom-search" 
+     data-classroom-search-url-value="<%= admin_classrooms_path %>">
+  <%= form_with url: admin_classrooms_path, method: :get, data: { turbo_frame: "classrooms", action: "input->classroom-search#search" } do |f| %>
+    <div class="input-group">
+      <%= f.text_field :search, 
+            value: params[:search], 
+            placeholder: "Поиск по названию", 
+            class: "form-control",
+            data: { classroom_search_target: "input" } %>
+      <%= f.submit "Найти", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
+
+<%= turbo_frame_tag "classrooms" do %>
+  <div id="classrooms-list" class="container mb-3" data-classroom-search-target="classroomsList">
+    <% if @classrooms.present? %>
+      <%= render partial: 'classroom', collection: @classrooms, as: :classroom %>
+    <% else %>
+      <div class="alert alert-info">Аудиторий нет</div>
+    <% end %>
+  </div>
+<% end %>
+
+<div id="editor">
+  <%= turbo_frame_tag "new_classroom" do %>
+    <%= button_to "Добавить аудиторию", new_admin_classroom_path, method: :get, class: "btn btn-primary" %>
+  <% end %>
+</div>

@@ -1,0 +1,12 @@
+<%= turbo_frame_tag "errors" do %>
+  <% if change.errors.any? %>
+    <div class="alert alert-danger">
+      <h5><%= pluralize(change.errors.count, "error") %> prohibited this change from being saved:</h5>
+      <ul>
+        <% change.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% end %>

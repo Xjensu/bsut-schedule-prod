@@ -1,0 +1,17 @@
+<div id="transfers_<%= target %>_<%= change.id %>" class="border rounded-3 mb-3" 
+  <% if method == :add %> data-action="click->transfer-changes#openEditPanel"
+    data-change-id= "<%= change.id %>" data-classroom-id="<%= change.classroom_id %>" data-teacher-id="<%= change.teacher_id %>" 
+  <% end %>
+  >
+  <%= method %>:<%= change[:schedule_id] %>_for_<%= change[:created_at].strftime("%y_%m_%d_%H:%M:%S") %>
+  <% if method.to_s == 'delete' %>
+    <%= button_to admin_deleted_schedule_path(change[:id], target: target), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: 'Are you sure you want to delete this schedule?' } do %>
+      <i class="bi bi-trash"></i>
+    <% end %>
+  <% else %>
+    <%= button_to admin_added_schedule_path(change[:id], target: target), method: :delete, class: 'btn btn-sm btn-outline-danger', data: { confirm: 'Are you sure you want to delete this schedule?'} do %>
+      <i class="bi bi-trash"></i>
+    <% end %>
+  <% end %>
+</div>
+

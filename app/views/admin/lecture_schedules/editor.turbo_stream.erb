@@ -1,0 +1,14 @@
+<%= turbo_stream.replace "schedule_editor" do %>
+  <%= turbo_frame_tag "schedule_editor" do %>
+    <%= render partial: "schedule_redactor", locals: {
+      schedule: @schedule,
+      start_time: @start_time,
+      special_period_id: @special_period_id,
+      teacher: @teacher,
+      classroom: @classroom,
+      subject: @subject,
+      course: @course,
+      student_group_id: @group_id
+    } %>
+  <% end %>
+<% end %>

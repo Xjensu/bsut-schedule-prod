@@ -1,0 +1,11 @@
+<%= form_with model: classroom, url: admin_classrooms_path, method: :post do |f| %>
+  <div class="mb-3">
+    <%= f.label :name, "Номер", class: "form-label" %>
+    <%= f.text_field :name, class: "form-control" %>
+    <% classroom.errors.full_messages_for(:name).each do |message| %>
+      <div class="invalid-feedback d-block"><%= message %></div>
+    <% end %>
+  </div>
+
+  <%= f.submit "Подтвердить", class: "btn btn-primary" %>
+<% end %>

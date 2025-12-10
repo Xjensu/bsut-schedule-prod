@@ -1,0 +1,14 @@
+<div>
+  <div class="row">
+    <div class="col" id="schedules-info">
+      <%= render partial: 'shared/schedule/schedule_cards', locals: {
+        default_times: default_times,
+        schedules: schedules,
+        param: param,
+        card_partial: card_partial,
+        card_stimulus: card_stimulus,
+        card_attributes: card_attributes
+      } %>
+    </div>
+  </div>
+</div>

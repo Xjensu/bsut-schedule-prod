@@ -1,0 +1,56 @@
+<%= turbo_frame_tag "schedule_editor" do %>
+  <% if schedule.id.present? %>
+    <% url = admin_default_schedule_path(schedule.id) %>
+    <% method = :patch  %>
+  <% else %>
+    <% url = admin_default_schedules_path %>
+    <% method = :post %>
+  <% end %>
+
+  <%= render 'errors', schedule: schedule %>
+
+  <%= form_with model: schedule, url: url, method: method, data: { turbo_frame: "_top", controller: "schedule-form teacher-selection classroom-selection", action: "turbo:submit-end->schedule-form#handleResponse"  }  do |f| %>
+
+    <%= f.hidden_field :teacher_id, data: { teacher_selection_target: "hiddenField" } %>
+    <%= f.hidden_field :academic_period_id, value: schedule.academic_period_id %>
+    <%= f.hidden_field :student_group_id, value: schedule.student_group_id %>
+    <%= f.hidden_field :day_of_week, value: schedule.day_of_week || 1 %>
+    <%= f.hidden_field :start_time, value: schedule.start_time || time %>
+    <%= f.hidden_field :classroom_id, value: schedule.classroom_id || nil , data: { classroom_selection_target: "hiddenField" } %>
+    <%= f.hidden_field :lesson_id, value: schedule.lesson_id || nil %>
+    <%= f.hidden_field :under, value: schedule.under? || params[:under] %>
+    <%= f.hidden_field :course, value: schedule.course || course %>
+
+    <% if schedule.id.present? %>
+      <h4>Редактирование расписания</h4>
+    <% else %>
+      <h4>Новое расписание</h4>
+    <% end %>
+      
+    <p>Время: <%= time %></p>
+
+    <%= render partial: "teachers", locals: { teachers: @teachers, selected_teacher: schedule.teacher } %>
+
+    <%= f.label :classroom_id, "Аудитория", class: "form-label" %>
+    <%= f.text_field :classroom_id, class: "form-control", value: schedule&.classroom&.name || nil %>
+
+    <div class="mb-3" id="lessons">
+      <% @lessons.each do |lesson| %>
+        <%= radio_button_tag :lesson_id_input , lesson.id,
+                  class: "form-check-input me-2", checked: schedule&.lesson_id == lesson.id %>
+        <%= "#{lesson.lesson_type_name}" %>
+      <% end %>
+    </div>
+
+    <%= f.label :subject_id, "Предмет", class: "form-label" %>
+    <%= f.text_field :subject_id, class: "form-control", value: schedule&.subject&.name || nil %>
+
+
+    <div class="mt-3">
+      <%= f.submit "Сохранить", class: "btn btn-primary" %>
+      <% if schedule.id.present? %>
+        <%= link_to "Удалить", admin_default_schedule_path(schedule.id), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Вы уверены?" }, class: "btn btn-danger" %>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

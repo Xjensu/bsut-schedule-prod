@@ -1,0 +1,56 @@
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  # Pool должен быть >= количества threads в Puma + запас для фоновых задач
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 16 } %>
+  host: <%= ENV['POSTGRES_HOST'] %>
+  port: <%= ENV['POSTGRES_PORT'] %>
+  # Оптимизация подключений
+  checkout_timeout: 5
+  reaping_frequency: 10
+  connect_timeout: 2
+  variables:
+    statement_timeout: 5000
+
+
+development:
+  <<: *default
+  database: app_development
+  username: <%= ENV['POSTGRES_USER'] %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
+
+  cable:
+    <<: *default
+    database: test_app_development_cable
+    migrations_paths: db/cable_migrate
+    username: <%= ENV['POSTGRES_USER'] %>
+    password: <%= ENV['POSTGRES_PASSWORD'] %>
+
+test:
+  <<: *default
+  database: test_app_test
+  username: <%= ENV['POSTGRES_USER'] %>
+  password: <%= ENV['POSTGRES_PASSWORD'] %>
+
+production:
+  primary: &primary_production
+    <<: *default
+    database: <%= ENV['POSTGRES_DB'] %>
+    username: <%= ENV['POSTGRES_USER'] %>
+    password: <%= ENV['POSTGRES_PASSWORD'] %>
+  cache:
+    <<: *primary_production
+    database: test_app_production_cache
+    migrations_paths: db/cache_migrate
+    
+  queue:
+    <<: *primary_production
+    database: test_app_production_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    database: test_app_production_cable
+    migrations_paths: db/cable_migrate

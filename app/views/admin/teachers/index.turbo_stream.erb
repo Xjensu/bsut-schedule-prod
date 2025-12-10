@@ -1,0 +1,14 @@
+
+<%= turbo_stream.update "teachers-list" do %>
+  <% if @teachers.present? %>
+    <% @teachers.each do |teacher| %>
+      <div class="col-md-8 align-items-center teacher-item" data-id="<%= teacher.id %>">
+        <div class="d-flex gap-3 justify-content-start mb-3">
+          <%= render partial: 'teacher', locals: { teacher: teacher } %>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="alert alert-info">Преподаватели не найдены</div>
+  <% end %>
+<% end %>

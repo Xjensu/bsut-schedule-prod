@@ -1,0 +1,24 @@
+class TeacherScheduleJob
+  include Sidekiq::Job
+  sidekiq_options retry: 3, dead: false
+
+  def perform
+    @dates = Rails.cache.read('current_dates')
+    Teacher.find_each do |teacher|
+      cache_key = "teacher:#{teacher.id}:schedule"
+      schedules = (0..1).map do |offset|
+        {
+          week: offset,
+          dates: @dates[offset][:dates].lazy.map do |date|
+            service = TeacherScheduleService.new(teacher.id, date).execute
+            schedule = service.schedule
+            AcademicPeriod.includes_date?(date) ? { date: date, schedule: schedule } : nil
+          end.to_a.compact
+        }
+      end.to_a
+      Rails.cache.write(cache_key, schedules, expires_in: 25.hours)
+    end
+    Rails.cache.write("all_teachers", Teacher.all, expires_in: 25.hours)
+    puts "PRFORMING IN TEACHRSCHEDULEJOB"
+  end
+end

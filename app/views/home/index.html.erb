@@ -1,0 +1,234 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+    --primary-color: #ffffff;
+    --secondary-color: #121212;
+    --accent-color: #333333;
+    --text-color: #ffffff;
+    --background-color: #000027;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body {
+    overflow-x: hidden;
+}
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding-top: 4rem;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+.section-title {
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+}
+.header-text {
+    font-size: 28px;
+    font-weight: 300;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.4;
+}
+.header-text span {
+    font-weight: 700;
+}
+/* Основной стиль блока */
+.exhibition-item {
+  width: 100%;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #fff;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Последний элемент — добавляем нижнюю границу */
+.exhibition-item:last-child {
+  border-bottom: 1px solid #fff;
+}
+
+/* Наведение: убираем верхнюю границу у текущего и следующего */
+.exhibition-item:hover {
+  background-color: white;
+  color: black;
+  border-top-color: transparent; /* Убираем свою верхнюю границу */
+  border-radius: 12px;
+  /* Опционально: можно добавить тонкую белую рамку для четкости */
+  box-shadow: 0 0 0 1px #fff; /* или border: 1px solid #fff; */
+  margin: 0 -2rem; /* компенсируем padding, чтобы border был на всю ширину */
+  padding: 2rem;
+}
+
+/* Убираем верхнюю границу у следующего блока при наведении на текущий */
+.exhibition-item:hover + .exhibition-item {
+  border-top-color: transparent;
+}
+
+/* Цвет текста при наведении */
+.exhibition-item:hover .exhibition-title,
+.exhibition-item:hover .exhibition-details,
+.exhibition-item:hover .arrow {
+  color: black !important;
+}
+
+/* Кнопка при наведении на блок */
+.exhibition-item:hover .button {
+  background-color: transparent;
+  color: black;
+  border-color: black;
+}
+
+/* Кнопка: наведение непосредственно на неё */
+.exhibition-item .button:hover {
+  background-color: black;
+  color: white;
+  border-color: black;
+}
+
+  .horizontal-line {
+      width: 100%;
+      height: 1px;
+      background-color: #fff;
+      margin: 1rem 0;
+      }
+  .number {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-right: 2rem;
+      min-width: 40px;
+      text-align: center;
+  }
+
+  .exhibition-info {
+      flex-grow: 1;
+  }
+
+  .exhibition-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+  }
+
+  .exhibition-subtitle {
+      font-size: 1rem;
+      color: #ccc;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+  }
+
+  .exhibition-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.875rem;
+      color: #999;
+      margin-top: 1rem;
+  }
+
+  .button {
+      background-color: transparent;
+      color: white;
+      border: 1px solid white;
+      border-radius: 10px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+  }
+  .button:hover {
+      background-color: white;
+      color: black;
+  }
+
+  .arrow {
+      font-size: 2rem;
+      color: #ffffffff;
+      margin-left: 1rem;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+      .exhibition-item {
+          padding: 1.5rem;
+      }
+      
+      .number {
+          font-size: 1.25rem;
+          margin-right: 1.5rem;
+      }
+      
+      .exhibition-title {
+          font-size: 1.25rem;
+      }
+      
+      .exhibition-subtitle {
+          font-size: 0.875rem;
+      }
+      
+      .exhibition-details {
+          font-size: 0.75rem;
+      }
+      
+      .button {
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+      }
+      
+      .arrow {
+          font-size: 1.5rem;
+      }
+  }
+</style>
+<div class="absolute top-10 left-10 w-72 h-72 bg-blue-400/10 rounded-full blur-2xl"></div>
+<div class="absolute bottom-12 right-10 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
+<div class="absolute bottom-0 left-0 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl"></div>
+<div class="absolute top-8 right-20 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
+<div class="absolute top-1/2 left-1/3 w-72 h-72 -translate-x-1/2 -translate-y-1/2 bg-blue-400/10 rounded-full blur-2xl"></div>
+<div class="absolute top-1/2 left-2/3 w-72 h-72 -translate-x-1/2 -translate-y-1/2 bg-blue-400/10 rounded-full blur-2xl"></div>
+<div class="container relative max-w-4xl mx-auto z-10">
+  
+  <div class="header text-center mb-16">
+    <div class="section-title text-sm uppercase tracking-[2px] text-white/70 mb-4">Выбор факультета</div>
+  </div>
+
+  <% if @faculties.present? %>
+    <% @faculties.each_with_index do |faculty, index| %>
+      <!-- Весь блок кликабелен, кроме кнопки -->
+      <div 
+        class="exhibition-item flex justify-between items-center border-b border-white py-6 px-4 cursor-pointer group"
+        onclick="window.location='<%= faculty_path(faculty.id) %>'"
+      >
+        <div class="flex items-center gap-6 flex-grow">
+          <div class="exhibition-info flex-grow">
+            <h2 class="exhibition-title text-xl font-semibold">
+              <%= faculty.full_name %>
+            </h2>
+          </div>
+        </div>
+        <div class="arrow text-3xl text-gray-400 group-hover:text-white transition-all ml-4">→</div>
+      </div>
+    <% end %>
+  <% else %>
+    <p class="text-center text-white/70">Нет данных о факультетах</p>
+  <% end %>
+</div>
+
+<%= render 'layouts/footer' %>

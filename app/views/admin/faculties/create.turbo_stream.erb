@@ -1,0 +1,14 @@
+<%= turbo_stream.append 'faculties' do %>
+  <%= render partial: 'faculty', locals: { faculty: @faculty } %>
+<% end %>
+
+<%= turbo_stream.replace 'faculty_new' do %>
+  <%= link_to "New", new_admin_faculty_path, class: 'btn btn-primary' %>
+<% end %>
+
+<%= turbo_stream.update 'flash' do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    Faculty was successfully created.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

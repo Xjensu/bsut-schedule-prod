@@ -1,0 +1,14 @@
+<%= turbo_frame_tag "editable" do %>
+  <div class="sidebar">
+    <h3>Создать новую группу</h3>
+    <%= form_with(model: group, url: admin_faculty_student_groups_path) do |form| %>
+      <%= form.hidden_field :faculty_id, value: params[:faculty_id] %>
+      <div class="field">
+        <%= form.label :group_name %>
+        <%= form.text_field :group_name %>
+      </div>
+      <%= form.submit "Подтвердить", class: "btn btn-primary" %>
+    <% end %>
+    <%= link_to "Back", admin_faculty_student_groups_path(faculty_id: params[:faculty_id]), class: "btn btn-primary" %>
+  </div>
+<% end %>

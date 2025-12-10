@@ -1,0 +1,12 @@
+<%= turbo_stream.replace "errors" do %>
+  <% if @schedule.errors.any? %>
+    <div class="alert alert-danger">
+      <h5><%= pluralize(@schedule.errors.count, "error") %> не позволили сохранить это расписание:</h5>
+      <ul>
+        <% @schedule.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% end %>

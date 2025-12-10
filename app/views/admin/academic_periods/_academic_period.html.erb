@@ -1,0 +1,15 @@
+<% if @academic_periods.present? %>
+  <div id="academics_periods" class="d-flex align-items-center mb-4">
+    <% @academic_periods.each do |period| %>
+      <%= link_to period.name, 
+            admin_default_schedules_path(
+              academic_period_id: period.id,
+              group_id: @group_id,
+              day: @selected_day,
+              use_default_schedule: @use_default_schedule
+            ),
+            class: "btn #{'btn-primary' if @selected_period_id.to_i == period.id.to_i} #{'btn-outline-primary' if @selected_period_id.to_i != period.id.to_i} mx-2",
+            data: { turbo_frame: "schedule_container" } %>
+    <% end %>
+  </div>
+<% end %>

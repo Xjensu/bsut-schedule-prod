@@ -1,0 +1,18 @@
+<%= turbo_stream.prepend "teachers" do %>
+  <div class="col-md-5 align-items-center">
+    <div class="d-flex gap-3 justify-content-end">
+      <%= render partial: 'teacher', locals: { teacher: @teacher } %>
+    </div>
+  </div>
+<% end %>
+
+<%= turbo_stream.replace "new_teacher" do %>
+  <%= button_to "Новый преподаватель", new_admin_teacher_path, method: :get, class: "btn btn-primary" %>
+<% end %>
+
+<%= turbo_stream.update "flash" do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    Преподаватель успешно создан
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

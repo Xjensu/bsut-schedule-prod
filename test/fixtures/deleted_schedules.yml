@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  schedule: one
+  date: 2025-08-05
+  group: one
+  course: 1
+
+two:
+  schedule: two
+  date: 2025-08-05
+  group: two
+  course: 1

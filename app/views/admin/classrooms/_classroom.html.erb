@@ -1,0 +1,12 @@
+<div class="col-md-8 align-items-center classroom-item" data-id="<%= classroom.id %>">
+  <div class="d-flex gap-3 justify-content-start mb-3" id="classroom_<%= classroom.id %>">
+    <%= classroom.name %>
+    
+    <%= button_to admin_classroom_path(classroom.id), 
+            method: :delete, 
+            form: { data: { turbo_confirm: 'Вы уверены?' } }, 
+            class: 'btn btn-sm btn-outline-danger' do %>
+        <i class="bi bi-trash"></i>
+      <% end %>
+  </div>
+</div>

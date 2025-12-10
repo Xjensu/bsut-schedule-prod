@@ -1,0 +1,5 @@
+<%= turbo_frame_tag "new_classroom" do %>
+  <%= render "form", classroom: @classroom, action: "create" %>
+
+  <%= link_to "Cancel", admin_classrooms_path, class: "btn btn-default" %>
+<% end %>

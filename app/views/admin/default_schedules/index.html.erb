@@ -1,0 +1,26 @@
+<%= link_to "Назад", admin_faculty_student_groups_path(StudentGroup.find(@group_id).faculty_id) %>
+
+<%# Выбор дня недели (остается как было) %>
+<h1>День недели</h1>
+<div class="days-of-week mb-4 d-flex align-items-center">
+  <% {
+    '1' => 'Понедельник',
+    '2' => 'Вторник', 
+    '3' => 'Среда',
+    '4' => 'Четверг',
+    '5' => 'Пятница',
+    '6' => 'Суббота'
+  }.each do |day_value, day_name| %>
+    <%= link_to day_name, 
+          admin_default_schedules_path(@query_params.merge(day: day_value)),
+          class: "btn #{'btn-primary' if @day.to_s == day_value} #{'btn-outline-primary' if @day.to_s != day_value} mx-2" %>
+  <% end %>
+</div>
+
+<%= turbo_frame_tag "schedule_container" do %>
+  <%= @schedule_renderer.render %>
+<% end %>
+
+<%= render 'shared/schedule/offcanvas' %>
+
+

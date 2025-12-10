@@ -1,0 +1,15 @@
+<div class="mt-5"  data-controller="transfers-teacher-selection transfers-classroom-selection unsaved-changes" data-unsaved-changes-initial-teacher-value="<%= teacher_id %>" data-unsaved-changes-initial-classroom-value="<%= classroom_id %>" >
+  <%= render 'errors', change: change %>
+  <%= form_with model: change, url: admin_added_schedule_path, method: :patch, local: true do |form| %>
+    <%= form.hidden_field :classroom_id, value: classroom_id , data: { transfers_classroom_selection_target: "hiddenField" } %>
+    <%= form.hidden_field :teacher_id , value: teacher_id, data: { transfers_teacher_selection_target: "hiddenField" } %>
+
+    <%= render partial: "teachers", locals: { teachers: @teachers, selected_teacher: teacher_id } %>
+
+    <%= render partial: "classrooms", locals: { classrooms: @classrooms, change: change, classroom_id: classroom_id } %>
+
+    <div class="mt-3" data-unsaved-changes-target="submitButton" style="display: none;">
+      <%= form.submit "Сохранить изменения", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

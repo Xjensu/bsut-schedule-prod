@@ -1,0 +1,5 @@
+<%= turbo_stream.replace target do %>
+  <%= turbo_frame_tag target do %>
+    <%= render partial: 'change_card', collection: deleted, as: :deleted, locals: { target: target.gsub('_delete', '') } %>
+  <% end %>
+<% end %>

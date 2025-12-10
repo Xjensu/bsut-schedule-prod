@@ -1,0 +1,10 @@
+<%= turbo_stream.replace "new_teacher" do %>
+  <%= render "form", teacher: @teacher, action: "create" %>
+<% end %>
+
+<%= turbo_stream.update "flash" do %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    Ошибка при создании преподавателя: <%= @teacher.errors.full_messages.to_sentence %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

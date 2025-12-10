@@ -1,0 +1,319 @@
+<script src="https://cdn.tailwindcss.com  "></script>
+<style>
+  html, body {
+      overflow-x: hidden;
+  }
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #000027;
+    color: #fff;
+    font-family: 'Helvetica', Arial, sans-serif;
+    font-weight:bolder;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+  }
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    text-align: center;
+    position: relative;
+  }
+  .top-right {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+  .content {
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    position: relative;
+  }
+  .group-content {
+    display: flex;
+    align-items: start;
+    justify-content: left;
+    position: relative;
+  }
+  /* Стрелка для группы */
+  .arrow-line {
+    position: absolute;
+    width: 150px;
+    height: 1px;
+    background-color: #fff;
+    transition: top 0.4s ease;
+  }
+  .arrow-line::after {
+    content: '';
+    position: absolute;
+    right: -15px;
+    top: -7px;
+    width: 0;
+    height: 0;
+    border-left: 15px solid #fff;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+  }
+  .text-container {
+    text-align: left;
+    margin-left: 180px;
+    position: relative;
+  }
+  .subtitle {
+    font-size: 0.875rem;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+  .title-parts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    position: relative;
+  }
+  .title-part {
+    font-size: 5rem;
+    font-weight: 300;
+    line-height: 1.2;
+    margin: 0;
+    color: #707375;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  .title-part.active {
+    color: #ffffff;
+  }
+  /* --- СЕКЦИЯ КУРСОВ --- */
+  .selection-section {
+    text-align: center;
+    position: relative;
+  }
+  .selection-subtitle {
+    font-size: 1.5rem;
+    margin-top: 4rem;
+    letter-spacing: 1px;
+    margin-bottom: 2rem;
+  }
+  .numbers-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    position: relative;
+  }
+  .number {
+    font-size: 3rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #707375;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  .number.active {
+    color: #ffffff;
+  }
+  /* Стрелка под выбранным курсом */
+  .course-arrow {
+    position: absolute;
+    top: 75px;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 15px solid #fff;
+    transition: left 0.4s ease;
+  }
+  .scroll-indicator {
+    margin-top: 4rem;
+    text-align: center;
+    width: 100%;
+    padding: 0 2rem;
+  }
+  .horizontal-line {
+    width: 100%;
+    height: 1px;
+    background-color: #fff;
+    margin: 1rem 0;
+  }
+  .buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    flex-direction: column;
+  }
+  .button {
+    background-color: transparent;
+    color: white;
+    border: 1px solid white;
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    /* Сделать все кнопки одинаковой ширины */
+    width: 100%;
+    max-width: 320px; /* или другое значение по вашему вкусу */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    margin: 0 auto; /* центрирование, если нужно */
+  }
+  .button:hover {
+    background-color: white;
+    color: black;
+  }
+  </style>
+<div class="absolute top-10 left-10 w-72 h-72 bg-blue-400/10 rounded-full blur-2xl"></div>
+<div class="absolute bottom-12 right-10 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
+<div class="absolute bottom-0 left-0 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl"></div>
+<div class="top-right"><%= @short_name %></div>
+
+<div class="container">
+  <% if @groups.present? %>
+    <div class="selection-subtitle">Выберите группу</div>
+    <div class="content">
+      <div class="group-content">
+        <div class="arrow-line"></div>
+        <div class="text-container">
+          <div class="title-parts">
+            <% @groups.each_with_index do |group, i| %>
+              <div class="title-part <%= 'active' if group.id == @selected_group_id %>"
+                   data-group-id="<%= group.id %>">
+                <%= group.group_name %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="selection-section">
+      <div class="selection-subtitle">Выберите курс</div>
+      <div class="numbers-container">
+        <% (1..5).each do |course| %>
+          <div class="number <%= 'active' if course == @selected_course.to_i %>"
+               data-course="<%= course %>"><%= course %></div>
+        <% end %>
+        <div class="course-arrow"></div>
+      </div>
+    </div>
+
+    <div class="scroll-indicator"><div class="horizontal-line"></div></div>
+
+    
+    <div class="buttons-container">
+      <%= form_with url: student_schedule_index_path, method: :get, local: true, class: "schedule-form" do |form| %>
+        <%= form.hidden_field :group_id, class: "form-group-id", value: @selected_group_id %>
+        <%= form.hidden_field :course, class: "form-course", value: @selected_course %>
+        <%= form.submit "Основное расписание", class: "button" %>
+      <% end %>
+
+      <%= form_with url: download_student_schedule_path, method: :get, local: true, class: "schedule-form" do |form| %>
+        <%= form.hidden_field :group_id, class: "form-group-id", value: @selected_group_id %>
+        <%= form.hidden_field :course, class: "form-course", value: @selected_course %>
+        <%= form.submit "Скачать расписание", class: "button" %>
+      <% end %>
+
+      <%= form_with url: student_schedule_index_path, method: :get, local: true, class: "schedule-form" do |form| %>
+        <%= form.hidden_field :group_id, class: "form-group-id", value: @selected_group_id %>
+        <%= form.hidden_field :course, class: "form-course", value: @selected_course %>
+        <%= form.hidden_field :schedule_type, value: "lecture" %>
+        <%= form.submit "Лекционная неделя", class: "button" %>
+      <% end %>
+
+      <%= form_with url: student_schedule_index_path, method: :get, local: true, class: "schedule-form" do |form| %>
+        <%= form.hidden_field :group_id, class: "form-group-id", value: @selected_group_id %>
+        <%= form.hidden_field :course, class: "form-course", value: @selected_course %>
+        <%= form.hidden_field :schedule_type, value: "test" %>
+        <%= form.submit "Зачеты", class: "button" %>
+      <% end %>
+
+      <%= form_with url: student_schedule_index_path, method: :get, local: true, class: "schedule-form" do |form| %>
+        <%= form.hidden_field :group_id, class: "form-group-id", value: @selected_group_id %>
+        <%= form.hidden_field :course, class: "form-course", value: @selected_course %>
+        <%= form.hidden_field :schedule_type, value: "exam" %>
+        <%= form.submit "Экзамены", class: "button" %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="mt-4">Нет данных о группах.</div>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener("turbo:load", () => {
+    (() => {
+      const arrow = document.querySelector('.arrow-line');
+      const titleParts = document.querySelectorAll('.title-part');
+      const groupInputs = document.querySelectorAll('.form-group-id');
+      if (!arrow || titleParts.length === 0) return;
+
+      function moveArrowTo(el) {
+        const r = el.getBoundingClientRect();
+        const c = el.parentElement.getBoundingClientRect();
+        arrow.style.top = `${r.top + r.height / 2 - c.top}px`;
+      }
+
+      const activeGroup = document.querySelector('.title-part.active');
+      if (activeGroup) moveArrowTo(activeGroup);
+
+      titleParts.forEach(part => {
+        part.addEventListener('click', () => {
+          titleParts.forEach(p => p.classList.remove('active'));
+          part.classList.add('active');
+          moveArrowTo(part);
+          const gid = part.dataset.groupId;
+          
+          groupInputs.forEach(input => {
+            input.value = gid;
+          });
+        });
+      });
+
+      const numbers = document.querySelectorAll('.number');
+      const courseArrow = document.querySelector('.course-arrow');
+      const courseInputs = document.querySelectorAll('.form-course');
+
+      function moveCourseArrow(el) {
+        const r = el.getBoundingClientRect();
+        const c = el.parentElement.getBoundingClientRect();
+        courseArrow.style.left = `${r.left + r.width / 2 - c.left - 10}px`;
+      }
+
+      const activeCourse = document.querySelector('.number.active');
+      if (activeCourse) moveCourseArrow(activeCourse);
+
+      numbers.forEach(num => {
+        num.addEventListener('click', () => {
+          numbers.forEach(n => n.classList.remove('active'));
+          num.classList.add('active');
+          moveCourseArrow(num);
+          const cval = num.dataset.course;
+          
+          courseInputs.forEach(input => {
+            input.value = cval;
+          });
+        });
+      });
+
+      window.addEventListener('resize', () => {
+        const g = document.querySelector('.title-part.active');
+        const c = document.querySelector('.number.active');
+        if (g) moveArrowTo(g);
+        if (c) moveCourseArrow(c);
+      });
+    })();
+  });
+</script>

@@ -1,0 +1,8 @@
+<%= turbo_stream.remove "classroom_#{@classroom.id}" %>
+
+<%= turbo_stream.update "flash" do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    Аудитория удалена
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

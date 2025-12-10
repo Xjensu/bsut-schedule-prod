@@ -1,0 +1,17 @@
+<div class="mb-3" data-controller="teacher-search" 
+     data-teacher-search-teachers-url-value="<%= search_admin_teachers_path %>"
+     data-teacher-search-target-value="<%= local_assigns[:target] || 'teachers' %>"
+     data-teacher-search-partial-value="<%= local_assigns[:partial] || nil %>">
+  <div class="input-group">
+    <input type="text" 
+           class="form-control" 
+           placeholder="Поиск преподавателей..." 
+           data-teacher-search-target="input"
+           data-action="input->teacher-search#search">
+    <button class="btn btn-outline-secondary" 
+            type="button"
+            data-action="click->teacher-search#reset">
+      Сбросить
+    </button>
+  </div>
+</div>

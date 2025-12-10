@@ -1,0 +1,14 @@
+<%= turbo_stream.prepend "classrooms-list" do %>
+  <%= render partial: 'classroom', locals: { classroom: @classroom } %>
+<% end %>
+
+<%= turbo_stream.replace "new_classroom" do %>
+  <%= button_to "Добавить аудиторию", new_admin_classroom_path, method: :get, class: "btn btn-primary" %>
+<% end %>
+
+<%= turbo_stream.update "flash" do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    Преподаватель успешно создан
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

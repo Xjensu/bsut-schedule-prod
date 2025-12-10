@@ -1,0 +1,27 @@
+<% link_to "Назад", :back %>
+<div class="card schedule-card mb-2"
+    id="schedule_card_<%= schedule.present? ? schedule.id : "%s_%s_%s" % [param[:time].to_s, param[:date].to_s.gsub('_', '-'), schedule_counter.to_s] %>"
+     data-controller="<%= card_stimulus[:controller] %>"
+     data-action="<%= card_stimulus[:action] %>"
+     data-schedule-id="<%= schedule ? schedule.id : nil %>"
+     <% param.each do |key, value| %>
+       data-<%= key.to_s.gsub('_', '-') %>= "<%= value %>"
+     <% end %>
+     <% card_attributes.each do |key, value| %>
+      data-<%= key.to_s.gsub('_', '-') %>= "<%= value %>"
+     <% end %>
+     <% card_attributes.each do |key, value| %>
+      <%= key %>="<%= value %>"
+     <% end %>
+     >
+  <div class="card-body">
+    <p class="card-text">
+      <% if schedule.nil? %>
+        Нет расписания
+      <% else %>
+        <%= schedule.lesson&.lesson_type_name %> <%= schedule.subject&.name %> <%= schedule.classroom&.name %><br>
+        <%= schedule.teacher&.post %> <%= schedule.teacher&.full_name %>
+      <% end %>
+    </p>
+  </div>
+</div>

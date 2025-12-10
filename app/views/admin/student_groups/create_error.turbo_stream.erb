@@ -1,0 +1,15 @@
+<%= turbo_stream.replace 'faculty_new' do %>
+  <%= render 'form', group: @group %>
+<% end %>
+
+<%= turbo_stream.update 'flash' do %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <%= pluralize(@group.errors.count, "ошибка/ошибок") %> возникла/возникли при сохранении:
+    <ul>
+      <% @group.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

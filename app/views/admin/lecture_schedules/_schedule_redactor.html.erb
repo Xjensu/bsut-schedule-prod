@@ -1,0 +1,28 @@
+<% if schedule.id.present? %>
+  <% url = admin_lecture_schedule_path(schedule.id) %>
+  <% method = :patch %>
+<% else %>
+  <% url= admin_lecture_schedules_path %>
+  <% method = :post %>
+<% end %>
+<%= form_with model: schedule, url: url, method: method, data: { controller: "classroom-selection" } do |form| %> 
+  <%= form.hidden_field :classroom_id, value: classroom, data: { classroom_selection_target: "hiddenField" } %>
+  <%= form.hidden_field :special_period_id, value: special_period_id %>
+  <%= form.hidden_field :course, value: course %>
+  <%= form.hidden_field :student_group_id, value: student_group_id %>
+  <%= form.hidden_field :lesson_id, value: @lesson %>
+  <%= form.hidden_field :start_time, value: @start_time %>
+  <%= render partial: 'teachers', locals: { teachers: @teachers, form: form, teacher_id: @teacher} %>
+
+  <%= render partial: 'classrooms', locals: { classrooms: @classrooms, schedule: schedule } %>
+
+  <%= form.label :subject_id, "Предмет", class: "form-label" %>
+  <%= form.text_field :subject_name, class: "form-control", value: schedule&.subject&.name || nil %>
+
+  <div class="mt-3">
+    <%= form.submit "Сохранить", class: "btn btn-primary" %>
+    <% if schedule.id.present? %>
+      <%= link_to "Удалить", admin_lecture_schedule_path(schedule.id), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Вы уверены?" }, class: "btn btn-danger" %>
+    <% end %>
+  </div>
+<% end %>

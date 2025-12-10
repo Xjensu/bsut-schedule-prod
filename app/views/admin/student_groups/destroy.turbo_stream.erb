@@ -1,0 +1,16 @@
+<%= turbo_stream.remove "group_#{@group.id}" %>
+<%= turbo_stream.update "groups_container" do %>
+  <select class="form-select" aria-label="Выберите группу" id='groups' data-groups-target="groupSelect">
+    <% @groups.each do |group| %>
+      <%= render partial: 'group', locals: { group: group } %>
+    <% end %>
+  </select>
+<% end %>
+
+<%= turbo_stream.update 'flash' do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    Группа успешно удалена.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+

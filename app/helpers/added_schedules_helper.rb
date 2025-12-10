@@ -1,0 +1,2 @@
+module AddedSchedulesHelper
+end

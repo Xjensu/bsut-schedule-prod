@@ -1,0 +1,43 @@
+<%= link_to "Назад", :back, data: { turbo: false }, class: "btn btn-outline-secondary" %>
+
+<div class="mb-4" data-controller="teacher-search" 
+     data-teacher-search-teachers-url-value="<%= admin_teachers_path %>">
+  <%= form_with url: admin_teachers_path, method: :get, data: { turbo_frame: "teachers", action: "input->teacher-search#search" } do |f| %>
+    <div class="input-group">
+      <%= f.text_field :search, 
+            value: params[:search], 
+            placeholder: "Поиск по ФИО", 
+            class: "form-control",
+            data: { teacher_search_target: "input" } %>
+      <%= f.submit "Найти", class: "btn btn-primary" %>
+      <%= link_to "Сбросить", admin_teachers_path, 
+            class: "btn btn-outline-secondary",
+            data: { 
+              action: "click->teacher-search#resetSearch",
+              teacher_search_target: "resetBtn" 
+            } %>
+    </div>
+  <% end %>
+</div>
+
+<%= turbo_frame_tag "teachers" do %>
+  <div id="teachers-list" class="container mb-3" data-teacher-search-target="teachersList">
+    <% if @teachers.present? %>
+      <% @teachers.each do |teacher| %>
+        <div class="col-md-8 align-items-center teacher-item" data-id="<%= teacher.id %>">
+          <div class="d-flex gap-3 justify-content-start mb-3">
+            <%= render partial: 'teacher', locals: { teacher: teacher } %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="alert alert-info">Преподаватели не найдены</div>
+    <% end %>
+  </div>
+<% end %>
+
+<div id="editor">
+  <%= turbo_frame_tag "new_teacher" do %>
+    <%= button_to "Новый преподаватель", new_admin_teacher_path, method: :get, class: "btn btn-primary" %>
+  <% end %>
+</div>

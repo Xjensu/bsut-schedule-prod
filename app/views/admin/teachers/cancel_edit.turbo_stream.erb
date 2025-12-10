@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "teacher_#{@teacher.id}" do %>
+  <%= render partial: "teacher", locals: { teacher: @teacher } %>
+<% end %>

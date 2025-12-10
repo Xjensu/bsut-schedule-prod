@@ -1,0 +1,15 @@
+<%= turbo_stream.replace @faculty do %>
+  <%= render 'form', faculty: @faculty %>
+<% end %>
+
+<%= turbo_stream.update 'flash' do %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <%= pluralize(@faculty.errors.count, "error") %> prohibited this faculty from being saved:
+    <ul>
+      <% @faculty.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

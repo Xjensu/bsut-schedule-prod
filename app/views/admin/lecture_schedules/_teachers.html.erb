@@ -1,0 +1,25 @@
+<div class="row gx-4 mb-2">
+  <div class="col">
+    <h5>Преподаватели</h5>
+  </div>
+  <div class="col">
+        <%= link_to "Больше", admin_teachers_path, class: "btn btn-secondary", data: { turbo: false } %>
+  </div>
+  </div>
+  <%= teacher_id %>
+
+  <%= render partial: 'shared/teacher_search', locals: { target: 'schedule_teachers', partial: 'teachers' } %>
+
+  <div style="height: 200px; overflow-y: scroll; border: 1px solid #ccc;">
+    <%= turbo_frame_tag "schedule_teachers" do %>
+      <div class="list-group">
+        <%= form.collection_radio_buttons :teacher_id, teachers, :id, :full_name do |b| %>
+          <div>
+            <%= b.radio_button data: { turbo: false }, checked:b.value == teacher_id.to_i %>
+            <%= b.label %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

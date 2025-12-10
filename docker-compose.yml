@@ -1,0 +1,228 @@
+services: 
+  # POSTGRES DATABASE
+  main-database: 
+    image: postgres:13
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: 
+      - "postgres"
+      - "-c"
+      - "max_connections=200"
+      - "-c"
+      - "shared_buffers=1GB"
+      - "-c"
+      - "effective_cache_size=4GB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=512MB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "temp_file_limit=10GB"
+      - "-c"
+      - "log_min_duration_statement=200ms"
+      - "-c"
+      - "idle_in_transaction_session_timeout=10s"
+      - "-c"
+      - "lock_timeout=1s"
+      - "-c"
+      - "statement_timeout=60s"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+      - "-c"
+      - "pg_stat_statements.max=10000"
+      - "-c"
+      - "pg_stat_statements.track=all"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - internal_network
+      - postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+       
+
+  # REDIS CLUSTER
+  redis-master:
+    image: redis:8.2-alpine
+    container_name: redis-master
+    hostname: redis-master
+    volumes:
+      - redis-master-data:/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - TZ=Europe/Moscow
+    command:
+      [
+        "redis-server",
+        "--port", "6379",
+        "--appendonly", "yes",
+        "--masterauth", "${REDIS_PASSWORD}",
+        "--requirepass", "${REDIS_PASSWORD}",
+        "--protected-mode", "no",
+        "--repl-backlog-size", "64mb",
+        "--repl-timeout", "60",
+        "--min-replicas-to-write", "0",
+        "--client-output-buffer-limit", "replica 512mb 128mb 60",
+        "--loglevel", "notice",
+        "--maxmemory", "512mb",
+        "--maxmemory-policy", "allkeys-lru" 
+      ]
+    networks:
+      internal_network:
+    restart: unless-stopped
+
+  # SIDEKIQ
+  sidekiq:
+    build: .
+    container_name: sidekiq
+    image: xjensu/bsut-schedule:latest
+    command: bundle exec sidekiq -C config/sidekiq.yml
+    environment:
+      - RAILS_ENV=${RAILS_ENV}
+      - POSTGRES_HOST=main-database
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+
+      - REDIS_MASTER_NAME=mymaster
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis-master:6379/0
+    volumes:
+      - app-storage:/rails/storage
+    depends_on:
+      - main-database
+      - redis-master
+    networks:
+      internal_network:
+    restart: always
+        
+  # RAILS APP CLUSTERS
+  rails-app-1:
+    build: .
+    command: "bundle exec puma -C config/puma.rb"
+    # command: "bundle exec falcon.rb"
+    image: xjensu/bsut-schedule:latest
+    container_name: rails-app1
+    environment:
+      - RAILS_ENV=${RAILS_ENV}
+      - POSTGRES_HOST=main-database
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      
+      - REDIS_MASTER_NAME=mymaster
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis-master:6379/0
+      
+      - WEB_CONCURRENCY=2
+      - RAILS_MAX_THREADS=16
+      - FALCON_PRELOAD=true
+      - FALCON_MAX_BODY_SIZE=104857600
+      - FALCON_READ_TIMEOUT=30
+      - FALCON_WRITE_TIMEOUT=30
+
+      # Оптимизация памяти (GC Tuning)
+      - RUBY_GC_HEAP_GROWTH_FACTOR=1.1
+      - RUBY_GC_MALLOC_LIMIT=33554432
+      - RUBY_GC_OLDMALLOC_LIMIT=33554432
+      - RUBY_GC_HEAP_INIT_SLOTS=10000
+      - MALLOC_ARENA_MAX=2
+    volumes:
+      - app-storage:/rails/storage
+    depends_on:
+      - main-database
+      - redis-master
+    networks:
+      internal_network: 
+    restart: always
+  
+  rails-app-2:
+    build: .
+    command: "bundle exec puma -C config/puma.rb"
+    image: xjensu/bsut-schedule:latest
+    # command: "bundle exec falcon.rb"
+    container_name: rails-app2
+    environment:
+      - RAILS_ENV=${RAILS_ENV}
+      - POSTGRES_HOST=main-database
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+
+      - REDIS_MASTER_NAME=mymaster
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+
+      - MAILER_USERNAME=${MAILER_USERNAME}
+      - MAILER_PASSWORD=${MAILER_PASSWORD}
+      - DOMAIN=${DOMAIN}
+
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis-master:6379/0
+      
+      - WEB_CONCURRENCY=2
+      - RAILS_MAX_THREADS=16
+      - FALCON_PRELOAD=true
+      - FALCON_MAX_BODY_SIZE=104857600
+      - FALCON_READ_TIMEOUT=30
+      - FALCON_WRITE_TIMEOUT=30
+
+      # Оптимизация памяти (GC Tuning)
+      - RUBY_GC_HEAP_GROWTH_FACTOR=1.1
+      - RUBY_GC_MALLOC_LIMIT=33554432
+      - RUBY_GC_OLDMALLOC_LIMIT=33554432
+      - RUBY_GC_HEAP_INIT_SLOTS=10000
+      - MALLOC_ARENA_MAX=2
+    volumes:
+      - app-storage:/rails/storage
+    depends_on:
+      - main-database
+      - redis-master
+    networks:
+      internal_network:
+    restart: always
+
+  # NGINX
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports: 
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - rails-app-1
+      - rails-app-2
+    networks:
+      - internal_network
+    restart: always
+
+volumes:
+  postgres_data: {}
+  app-storage: {}
+  redis-master-data: {}
+
+networks:
+  internal_network:
+    driver: bridge
+  postgres:
+    driver: bridge

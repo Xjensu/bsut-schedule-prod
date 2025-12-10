@@ -1,0 +1,36 @@
+<%= turbo_frame_tag "daily_schedule" do %>
+  <div class="row" data-controller="lecture-schedule-cards">
+    <% ['8:30', '10:10', '11:45', '14:00', '15:35', '17:10', '18:45'].each do |time| %>
+      <% 
+        schedule = schedules.find_by(start_time: Time.zone.parse(time) )
+      %>
+
+      <div class="col-md-2">
+        <%= time %>
+      </div>
+
+      <div class="col-md-9 pb-4">
+        <div class="card schedule-card mb-2" id="<%= @special_period_id %>" 
+          data-action="mouseover->lecture-schedule-cards#mouseoverElement mouseout->lecture-schedule-cards#mouseoutElement click->lecture-schedule-cards#showScheduleEditor"
+          data-special-period-id="<%= @special_period_id %>" data-start-time="<%= time %>"
+          data-teacher-id="<%= schedule.present? ? schedule.teacher_id : nil %>" data-classroom-id="<%= schedule.present? ? schedule.classroom_id : nil %>" data-subject-id="<%= schedule.present? ? schedule.subject_id : nil %>"
+          data-schedule-id="<%= schedule.present? ? schedule.id : nil %>" data-group-id="<%= student_group_id %>" data-course="<%= course %>" >
+          <div class="card-body">
+            <p class="card-text">
+              <% if schedule.present? %>
+                <div>
+                  <%= schedule.subject&.name %> <%= schedule.classroom&.name %><br>
+                  <%= schedule.teacher&.post %> <%= schedule.teacher&.full_name %>
+                </div>
+              <% else %>
+                <div>
+                  НЕт расписания
+                </div>
+              <% end %>
+            </p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

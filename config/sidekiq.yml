@@ -1,0 +1,13 @@
+:concurrency: 10
+:queues:
+  - default
+  - mailers
+  - critical
+  - low
+  - faculty_processing
+  - academic_period_cleanup
+:timeout: 30
+:logfile: ./log/sidekiq.log
+
+:redis:
+  url: <%= ENV.fetch("REDIS_URL") { "redis://:password@redis-master:6379/0" } %>

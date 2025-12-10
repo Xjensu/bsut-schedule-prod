@@ -1,0 +1,15 @@
+<%= turbo_stream.replace "schedule_editor" do %>
+  <%= turbo_frame_tag "schedule_editor" do %>
+    <div class="text-center p-3">
+      <status class="spinner-border">
+        <span class="visually-hidden">Загрузка...</span>
+      </status>
+    </div>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.append "body" do %>
+  <script>
+    bootstrap.Offcanvas.getInstance(document.getElementById('editPanel'))?.hide()
+  </script>
+<% end %>

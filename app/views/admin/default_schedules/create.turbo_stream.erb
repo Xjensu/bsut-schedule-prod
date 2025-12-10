@@ -1,0 +1,18 @@
+<%= turbo_stream.replace "schedule_editor" do %>
+  <%= turbo_frame_tag "schedule_editor" do %>
+    <div class="text-center p-3">
+      <status class="spinner-border">
+        <span class="visually-hidden">Загрузка...</span>
+      </status>
+    </div>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.replace "schedule_0" do %>
+  <%= render partial: "shared/schedule/schedule_card", locals: { 
+    schedule: @schedule,
+    param: { time: @schedule.start_time, day: @schedule.day_of_week, group_id: @schedule.student_group_id, academic_period_id: @schedule.academic_period_id, under: @schedule.under, course: @schedule.course, },
+    card_stimulus: { controller: 'default-schedule', action: "click->default-schedule#select" },
+    card_attributes: { "default-schedule": "card" }
+  } %>
+<% end %>

@@ -1,0 +1,35 @@
+<%= turbo_frame_tag dom_id(faculty) do %>
+  <div class="faculty-card card mb-3"
+    data-controller="faculty"
+    data-action="click->faculty#handleClick"
+    data-faculty-url-value="<%= admin_faculty_student_groups_path(faculty_id: faculty.id) %>"
+    >
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-8 col-12 order-2 order-md-1">
+          <h5 class="card-title"><%= faculty.full_name %></h5>
+          
+          <p class="card-text text-muted">
+            <strong>Short name:</strong> <%= faculty.short_name %>
+          </p>
+        </div>
+
+        <div class="flex-shrink-0" data-faculty-ignore >
+          <div class="d-flex gap-2 justify-content-end">
+            <%= link_to edit_admin_faculty_path(faculty), 
+                class: 'btn btn-sm btn-outline-primary' do %>
+              <i class="bi bi-pencil"></i>
+             <% end %>
+              
+            <%= button_to admin_faculty_path(faculty), 
+                method: :delete, 
+                form: { data: { turbo_confirm: 'Are you sure?' } }, 
+                class: 'btn btn-sm btn-outline-danger' do %>
+              <i class="bi bi-trash"></i>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

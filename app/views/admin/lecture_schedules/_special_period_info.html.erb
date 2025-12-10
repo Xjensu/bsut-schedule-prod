@@ -1,0 +1,6 @@
+<% if period.present? %>
+  <div id="<%= dom_id(period) %>" class="col">
+    <%= link_to period.start_date.strftime("%d.%m.%y"), admin_lecture_schedules_path(special_period_id: period.id, academic_period_id: @academic_period_id, group_id: @group,course: @course), 
+                  method: :get, ata: { turbo_stream: true, toggle: "tooltip" }, class: "btn #{'btn-primary' if @special_period_id.to_i == period.id} period-btn" %>
+  </div>
+<% end %>

@@ -1,0 +1,17 @@
+<%= link_to "Назад", :root %>
+<div class="container">
+  <h3>Факультеты</h3>
+  <div id="faculties" class="mb-5" >
+    <% @faculties.each do |faculty| %>
+      <div id="<%= dom_id(faculty)%>">
+        <%= turbo_frame_tag dom_id(faculty) do %>
+          <%= render partial: 'faculty', locals: { faculty: faculty } %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= turbo_frame_tag "faculty_new" do %>
+    <%= link_to "New", new_admin_faculty_path, class: 'btn btn-primary'%>
+  <% end %>
+</div>

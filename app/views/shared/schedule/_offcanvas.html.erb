@@ -1,0 +1,20 @@
+<div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" 
+         tabindex="-1" id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel"
+         data-controller="resizable" data-resizable-min-width-value="300" data-resizable-max-width-value="800" data-resizable-target="offcanvas" data-resizable-direction-value="end">
+  <div class="offcanvas-resizer" 
+       data-resizable-target="resizer"
+       data-action="mousedown->resizable#startResize"></div>
+    <div class="offcanvas-header">
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
+    </div>
+    <div class="offcanvas-body">
+      <%= turbo_frame_tag "schedule_editor" do %>
+        <div class="text-center p-3">
+          <status class="spinner-border">
+            <span class="visually-hidden">Загрузка...</span>
+          </status>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

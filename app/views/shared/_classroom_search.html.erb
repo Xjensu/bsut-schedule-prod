@@ -1,0 +1,16 @@
+<div class="mb-3" data-controller="classroom-search" 
+     data-classroom-search-classrooms-url-value="<%= search_admin_classrooms_path %>"
+     data-classroom-search-target-value="<%= local_assigns[:target] || 'classrooms' %>">
+  <div class="input-group">
+    <input type="text" 
+           class="form-control" 
+           placeholder="Поиск аудиторий..." 
+           data-classroom-search-target="input"
+           data-action="input->classroom-search#search">
+    <button class="btn btn-outline-secondary" 
+            type="button"
+            data-action="click->classroom-search#reset">
+      Сбросить
+    </button>
+  </div>
+</div>
