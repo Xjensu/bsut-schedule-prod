@@ -8,17 +8,19 @@ services:
     command: 
       - "postgres"
       - "-c"
-      - "max_connections=200"
+      - "max_connections=500"
       - "-c"
-      - "shared_buffers=1GB"
+      - "shared_buffers=256MB"
       - "-c"
-      - "effective_cache_size=4GB"
+      - "effective_cache_size=2GB"
       - "-c"
-      - "work_mem=16MB"
+      - "work_mem=8MB"
       - "-c"
-      - "maintenance_work_mem=512MB"
+      - "maintenance_work_mem=256MB"
       - "-c"
       - "random_page_cost=1.1"
+      - "-c"
+      - "max_parallel_workers=4"
       - "-c"
       - "temp_file_limit=10GB"
       - "-c"
@@ -52,8 +54,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
-          memory: 4G
+          cpus: '1.5'
+          memory: 2G
        
 
   # REDIS CLUSTER
@@ -116,7 +118,7 @@ services:
   # RAILS APP CLUSTERS
   rails-app-1:
     build: .
-    command: "bundle exec puma -C config/puma.rb"
+    command: "bundle exec falcon.rb"
     # command: "bundle exec falcon.rb"
     image: xjensu/bsut-schedule:latest
     container_name: rails-app1
@@ -133,12 +135,15 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis-master:6379/0
       
-      - WEB_CONCURRENCY=2
-      - RAILS_MAX_THREADS=16
+      - WEB_CONCURRENCY=3
+      - RAILS_MAX_THREADS=8
       - FALCON_PRELOAD=true
       - FALCON_MAX_BODY_SIZE=104857600
       - FALCON_READ_TIMEOUT=30
       - FALCON_WRITE_TIMEOUT=30
+
+      - RAILS_SERVE_STATIC_FILES=true
+      - RACK_TIMEOUT_SERVICE_TIMEOUT=15
 
       # Оптимизация памяти (GC Tuning)
       - RUBY_GC_HEAP_GROWTH_FACTOR=1.1
@@ -157,7 +162,7 @@ services:
   
   rails-app-2:
     build: .
-    command: "bundle exec puma -C config/puma.rb"
+    command: "bundle exec falcon.rb"
     image: xjensu/bsut-schedule:latest
     # command: "bundle exec falcon.rb"
     container_name: rails-app2
@@ -169,22 +174,64 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
-
+      
       - REDIS_MASTER_NAME=mymaster
       - REDIS_PASSWORD=${REDIS_PASSWORD}
-
-      - MAILER_USERNAME=${MAILER_USERNAME}
-      - MAILER_PASSWORD=${MAILER_PASSWORD}
-      - DOMAIN=${DOMAIN}
-
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis-master:6379/0
       
-      - WEB_CONCURRENCY=2
-      - RAILS_MAX_THREADS=16
+      - WEB_CONCURRENCY=3
+      - RAILS_MAX_THREADS=8
       - FALCON_PRELOAD=true
       - FALCON_MAX_BODY_SIZE=104857600
       - FALCON_READ_TIMEOUT=30
       - FALCON_WRITE_TIMEOUT=30
+
+      - RAILS_SERVE_STATIC_FILES=true
+      - RACK_TIMEOUT_SERVICE_TIMEOUT=15
+
+      # Оптимизация памяти (GC Tuning)
+      - RUBY_GC_HEAP_GROWTH_FACTOR=1.1
+      - RUBY_GC_MALLOC_LIMIT=33554432
+      - RUBY_GC_OLDMALLOC_LIMIT=33554432
+      - RUBY_GC_HEAP_INIT_SLOTS=10000
+      - MALLOC_ARENA_MAX=2
+    volumes:
+      - app-storage:/rails/storage
+    depends_on:
+      - main-database
+      - redis-master
+    networks:
+      internal_network:
+    restart: always
+
+  rails-app-3:
+    build: .
+    command: "bundle exec falcon.rb"
+    image: xjensu/bsut-schedule:latest
+    # command: "bundle exec falcon.rb"
+    container_name: rails-app3
+    environment:
+      - RAILS_ENV=${RAILS_ENV}
+      - POSTGRES_HOST=main-database
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      
+      - REDIS_MASTER_NAME=mymaster
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis-master:6379/0
+      
+      - WEB_CONCURRENCY=3
+      - RAILS_MAX_THREADS=8
+      - FALCON_PRELOAD=true
+      - FALCON_MAX_BODY_SIZE=104857600
+      - FALCON_READ_TIMEOUT=30
+      - FALCON_WRITE_TIMEOUT=30
+
+      - RAILS_SERVE_STATIC_FILES=true
+      - RACK_TIMEOUT_SERVICE_TIMEOUT=15
 
       # Оптимизация памяти (GC Tuning)
       - RUBY_GC_HEAP_GROWTH_FACTOR=1.1
