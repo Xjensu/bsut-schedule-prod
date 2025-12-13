@@ -1,19 +1,88 @@
-<!-- app/views/schedules/index.html.erb -->
-<%= stylesheet_link_tag "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" %>
-<%= stylesheet_link_tag "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" %>
+<div class="schedule-container">
+    <div class="schedule-grid">
+        <% schedules.each do |schedule| %>
+            <div class="schedule-column">
+                <div class="week-info" onclick="toggleWeek(this)">
+                    <span><%= schedule[:week] == 0? "Текущая неделя" : "Следующая неделя" %> (<%= schedule[:under] ? "Над чертой" : "Под чертой" %>)</span>
+                    <i class="bi bi-chevron-down arrow-icon"></i>
+                </div>
+                
+                <div class="week-content">
+                    <% schedule[:dates].each_with_index do |dates_schedule, day_index| %>
+                        <div class="day-section">
+                            <div class="day-header"><%= @days[day_index] %></div>
+                            
+                            <% @times.each do |time_str| %>
+                                <% lessons_at_time = dates_schedule[:schedule].select do |lesson|
+                                     lesson.start_time.strftime("%H:%M") == time_str
+                                   end %>
+                                <div class="time-row">
+                                    <div class="time-column">
+                                        <%= time_str %>
+                                        <% if lessons_at_time.any? %>
+                                            <div class="time-circles">
+                                                <% lessons_at_time.each do |lesson| %>
+                                                    <span class="lesson-type-circle <%= lesson.lesson.present? ? lesson.lesson.lesson_type.downcase : "lecture" %>" title="<%= lesson.lesson.present? ? lesson.lesson.lesson_type_name : "" %>"></span>
+                                                <% end %>
+                                            </div>
+                                        <% end %>
+                                    </div>
+                                    <div class="lesson-column">
+                                        <% if lessons_at_time.any? %>
+                                            <% lessons_at_time.each do |lesson| %>
+                                                <div class="lesson-card">
+                                                    <div class="lesson-header">
+                                                        <div class="lesson-title">
+                                                            <span class="lesson-name">
+                                                                <%= lesson.lesson.present? ? lesson.lesson.lesson_type_name.upcase : "" %> <%= lesson.subject.name %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="room"><%= lesson.classroom.present? ? lesson.classroom.name : "" %></div>
+                                                    </div>
+                                                    <div class="teacher"><%= lesson.teacher.present? ? lesson.teacher.full_name : "" %></div>
+                                                </div>
+                                            <% end %>
+                                        <% else %>
+                                            <div class="empty-cell">Нет занятий</div>
+                                        <% end %>
+                                    </div>
+                                </div>
+                            <% end %>
+                        </div>
+                    <% end %>
+                </div>
+            </div>
+        <% end %>
+    </div>
+</div>
 
 <style>
-  .schedule-container {
+/* Schedule Container */
+.schedule-container {
     max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-  }
-  
-  .week-info {
+    margin: 80px auto 40px; /* Top margin to clear navbar */
+    padding: 0 20px;
+}
+
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+@media (max-width: 833px) {
+    .schedule-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Week Header */
+.week-info {
     text-align: center;
     margin-bottom: 20px;
-    font-weight: bold;
-    color: #333;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #1d1d1f;
     cursor: pointer;
     user-select: none;
     transition: color 0.2s ease;
@@ -21,196 +90,157 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-  }
-  
-  .week-info:hover {
-    color: #007bff;
-  }
-  
-  .week-content {
+    padding: 10px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.week-info:hover {
+    color: #0071e3; /* Apple Blue */
+}
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+    font-size: 0.9rem;
+    color: #86868b;
+}
+
+.arrow-icon.collapsed {
+    transform: rotate(-90deg);
+}
+
+/* Week Content Animation */
+.week-content {
     overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-  }
-  
-  .day-header {
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+}
+
+/* Day Section */
+.day-section {
+    margin-bottom: 30px;
+}
+
+.day-header {
     text-align: center;
-    font-weight: bold;
+    font-weight: 600;
     margin-bottom: 15px;
-    font-size: 1.2rem;
-  }
-  
-  .time-column {
-    width: 80px;
+    font-size: 1.1rem;
+    color: #86868b;
+}
+
+/* Time Row Layout */
+.time-row {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.time-column {
+    width: 60px;
     text-align: right;
     padding-right: 15px;
-    font-weight: bold;
-    color: #555;
-  }
-  
-  .lesson-card {
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
-    min-height: 70px;
+    font-weight: 500;
+    color: #86868b;
+    font-size: 0.9rem;
+    padding-top: 15px; /* Align with card content */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  .lesson-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-  
-  .lesson-type {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .lecture {
-    color: #000000;
-  }
-  
-  .pz {
-    color: #002147;
-  }
-  
-  .lab {
-    color: #dc3545;
-  }
-  
-  .teacher {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 5px;
-  }
-  
-  .room {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  .empty-cell {
-    border: 1px dashed #dee2e6;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-    background-color: #f8f9fa;
-    min-height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    font-style: italic;
-  }
-  
-  .schedule-column {
-    padding: 0 15px;
-  }
-  
-  .day-section {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .day-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
+    align-items: flex-end;
+    gap: 5px;
+}
 
-  .lesson-header {
+.time-circles {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.lesson-column {
+    flex: 1;
+}
+
+/* Lesson Card */
+.lesson-card {
+    background-color: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(0,0,0,0.02);
+    margin-bottom: 10px; /* Added margin bottom for spacing between cards */
+}
+
+.lesson-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.lesson-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 5px;
-  }
+    margin-bottom: 8px;
+}
 
-  .dark-text {
-    color: #1e0023ff; /* или #000, если хочешь чёрный */
-    font-weight: bold;
-    font-size: 1.25rem;
-  }
-  
-  .arrow-icon {
-    transition: transform 0.3s ease;
-    font-size: 1.2rem;
-    color: #666;
-  }
-  
-  .arrow-icon.collapsed {
-    transform: rotate(-90deg);
-  }
-  
-  @media (max-width: 768px) {
-    .time-column {
-        width: 60px;
-        font-size: 0.9rem;
-    }
-    
-    .lesson-card {
-        padding: 12px;
-        min-height: 60px;
-    }
-    
-    .empty-cell {
-        padding: 12px;
-        min-height: 60px;
-    }
-    
-    .schedule-column {
-        padding: 0 10px;
-    }
-  }
+.lesson-title {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: #1d1d1f;
+}
+
+/* Colored Circles for Lesson Types */
+.lesson-type-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.lesson-type-circle.lecture {
+    background-color: #1d1d1f; /* Black/Dark Gray */
+}
+
+.lesson-type-circle.pz {
+    background-color: #0071e3; /* Blue */
+}
+
+.lesson-type-circle.lab {
+    background-color: #ff3b30; /* Red */
+}
+
+.room {
+    font-size: 0.9rem;
+    color: #1d1d1f;
+    font-weight: 600;
+    background: #f5f5f7;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.teacher {
+    font-size: 0.9rem;
+    color: #86868b;
+}
+
+/* Empty Cell */
+.empty-cell {
+    border: 1px dashed #d2d2d7;
+    border-radius: 18px;
+    padding: 20px;
+    background-color: rgba(255,255,255,0.5);
+    color: #86868b;
+    font-style: italic;
+    text-align: center;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>
-
-<div class="container schedule-container">
-  <div class="row">
-    <% schedules.each do |schedule| %>
-      <div class="col-md-6 schedule-column">
-        <%= render partial: "week", locals: { week: schedule[:week], under: schedule[:under] } %>
-
-        <div class="week-content">
-          <% schedule[:dates].each_with_index do |dates_schedule, day_index| %>
-            <div class="day-header"><%= @days[day_index] %></div>
-
-            <% @times.each do |time_str| %>
-              <div class="row mb-3">
-                <div class="col-auto time-column"><%= time_str %></div>
-                <div class="col">
-                  <% lessons_at_time = dates_schedule[:schedule].select do |lesson|
-                       lesson.start_time.strftime("%H:%M") == time_str
-                     end %>
-
-                  <% if lessons_at_time.any? %>
-                    <% lessons_at_time.each do |lesson| %>
-                      <div class="lesson-card">
-                        <div class="lesson-header">
-                          <div class="lesson-type <%= lesson.lesson.present? ? lesson.lesson.lesson_type.downcase : "lecture" %>">
-                            <%= lesson.lesson.present? ? lesson.lesson.lesson_type_name.upcase : "" %> <%= lesson.subject.name %>
-                          </div>
-                          <div class="room dark-text"><%= lesson.classroom.present? ? lesson.classroom.name : "" %></div>
-                        </div>
-                        <div class="teacher"><%= lesson.teacher.present? ? lesson.teacher.full_name : "" %></div>
-                      </div>
-                    <% end %>
-                  <% else %>
-                    <div class="empty-cell">Нет занятий</div>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-</div>
 
 <script>
   function toggleWeek(element) {
@@ -236,5 +266,3 @@
     });
   });
 </script>
-
-<%= javascript_include_tag "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" %>

@@ -3,13 +3,13 @@
 end
 
 faculties_data = [
-  { full_name: "Строительный факультет", short_name: "СТР", processing_time: "14:00", src: "https://www.bsut.by/university/faculties/sf", password: ENV.read('STR_PASSWORD'), email: "admin_str@bsut.mail.ru" },
-  { full_name: "Факультет экономики и бизнес-технологий:", short_name: "ФЭБТ", processing_time: "14:10", src: "https://www.bsut.by/university/faculties/gef", password: ENV.read('FEBT_PASSWORD'), email: "admin_febt@bsut.mail.ru" },
-  { full_name: "Военно-транспортный факультет", short_name: "ВТФ", processing_time: "14:20", src: "https://www.bsut.by/university/faculties/vtf", password: ENV.read('VTF_PASSWORD'), email: "admin_vtf@bsut.mail.ru" },
-  { full_name: "Электротехнический факультет", short_name: "ЭТФ", processing_time: "14:30", src: "https://www.bsut.by/university/faculties/etf", password: ENV.read('ETF_PASSWORD'), email: "admin_etf@bsut.mail.ru" },
-  { full_name: "Факультет промышленнного и гражданского строительства", short_name: "ПГС", processing_time: "14:40", src: "https://www.bsut.by/university/faculties/pgs", password: ENV.read('PGS_PASSWORD'), email: "admin_pgs@bsut.mail.ru" },
-  { full_name: "Механический факультет", short_name: "МЕХ", processing_time: "14:50", src: "https://www.bsut.by/university/faculties/mf", password: ENV.read('MEH_PASSWORD'), email: "admin_meh@bsut.mail.ru" },
-  { full_name: "Факультет управления процессами пеервозок", short_name: "УПП", processing_time: "15:00", src: "https://www.bsut.by/university/faculties/upp", password: ENV.read('UPP_PASSWORD'), email: "admin_upp@bsut.mail.ru" }
+  { full_name: "Строительный факультет", short_name: "СТР", processing_time: "14:00", src: "https://www.bsut.by/university/faculties/sf", password: ENV.fetch('STR_PASSWORD'), email: "admin_str@bsut.mail.ru" },
+  { full_name: "Факультет экономики и бизнес-технологий:", short_name: "ФЭБТ", processing_time: "14:10", src: "https://www.bsut.by/university/faculties/gef", password: ENV.fetch('FEBT_PASSWORD'), email: "admin_febt@bsut.mail.ru" },
+  { full_name: "Военно-транспортный факультет", short_name: "ВТФ", processing_time: "14:20", src: "https://www.bsut.by/university/faculties/vtf", password: ENV.fetch('VTF_PASSWORD'), email: "admin_vtf@bsut.mail.ru" },
+  { full_name: "Электротехнический факультет", short_name: "ЭТФ", processing_time: "14:30", src: "https://www.bsut.by/university/faculties/etf", password: ENV.fetch('ETF_PASSWORD'), email: "admin_etf@bsut.mail.ru" },
+  { full_name: "Факультет промышленнного и гражданского строительства", short_name: "ПГС", processing_time: "14:40", src: "https://www.bsut.by/university/faculties/pgs", password: ENV.fetch('PGS_PASSWORD'), email: "admin_pgs@bsut.mail.ru" },
+  { full_name: "Механический факультет", short_name: "МЕХ", processing_time: "14:50", src: "https://www.bsut.by/university/faculties/mf", password: ENV.fetch('MEH_PASSWORD'), email: "admin_meh@bsut.mail.ru" },
+  { full_name: "Факультет управления процессами пеервозок", short_name: "УПП", processing_time: "15:00", src: "https://www.bsut.by/university/faculties/upp", password: ENV.fetch('UPP_PASSWORD'), email: "admin_upp@bsut.mail.ru" }
 ]
 User.delete_all
 faculties = faculties_data.map do |faculty|

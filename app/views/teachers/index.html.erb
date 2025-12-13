@@ -1,96 +1,412 @@
-<style>
-  .menu-item {
-    padding: 10px 0;
-    border-bottom: 1px solid #ccc;
-  }
-  .menu-item:last-child {
-    border-bottom: none;
-  }
-  .menu-item-number {
-    margin-right: 10px;
-  }
-  .menu-item-text {
-    font-size: 1.2rem;
-  }
-  .menu-item-active {
-    color: #947d7f; /* Красный цвет для активного пункта */
-  }
-  .search-container {
-    padding: 15px 20px;
-  }
-  .search-form {
-    display: flex;
-    align-items: center;
-  }
-  .search-input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 4px 0 0 4px;
-    outline: none;
-  }
-  .search-button {
-    background-color: #212529;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 0 4px 4px 0;
-    cursor: pointer;
-  }
-  .menu-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: white;
-    padding: 20px;
-    border-top: 2px solid #000;
-    z-index: 1000;
-    max-height: 70vh;
-    overflow-y: auto;
-  }
-  .logo {
-    display: flex;
-    align-items: center;
-  }
-  .logo-circle {
-    width: 20px;
-    height: 20px;
-    background-color: #dc3545;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
 
-  .menu-item a {
-      color: inherit !important;
-      text-decoration: none !important;
-  }
-  .menu-item a:hover {
-      color: inherit !important;
-      text-decoration: none !important;
-  }
+<style>
+/* Reset & Basic Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "SF Pro Text", "Myriad Set Pro", "SF Pro Icons", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    background-color: #ffffff;
+    color: #1d1d1f;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#webgl-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* Main Content Wrapper */
+.main-content-wrapper {
+    padding-top: 80px;
+    padding-bottom: 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px; /* Narrower container for list */
+    padding: 0 20px;
+}
+
+/* Search Section */
+.search-container {
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 20px;
+    padding-left: 45px; /* Space for icon */
+    font-size: 17px;
+    border: 1px solid #d2d2d7;
+    border-radius: 12px;
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #0071e3;
+    box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+}
+
+.search-button {
+    position: absolute;
+    left: 10px;
+    background: none;
+    border: none;
+    color: #86868b;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+/* Teachers List */
+.teachers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.teacher-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 20px 25px;
+    text-decoration: none;
+    color: #1d1d1f;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.teacher-card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    background-color: #fbfbfd;
+}
+
+.teacher-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.teacher-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.teacher-post {
+    font-size: 0.9rem;
+    color: #86868b;
+}
+
+.arrow-icon {
+    color: #d2d2d7;
+    font-size: 1.2rem;
+    transition: color 0.2s ease;
+}
+
+.teacher-card:hover .arrow-icon {
+    color: #0071e3;
+}
+
+/* Page Title */
+.page-title {
+    font-size: 40px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #1d1d1f;
+}
+
 </style>
 
-<div class="search-container">
-    <%= form_tag teachers_path, method: :get, class: "d-flex align-items-center" do %>
-        <%= text_field_tag :search, params[:search], 
-            placeholder: "Найти преподавателя", 
-            class: "form-control search-input ps-5", 
-            aria_label: "search" %>
-        <%= button_tag type: "submit", class: "btn btn-search btn-dark ms-2" do %>
-            <i class="bi bi-search"></i>
-        <% end %>
-    <% end %>
+<canvas id="webgl-canvas"></canvas>
+
+<div class="main-content-wrapper">
+    <div class="container">
+        <h1 class="page-title">Преподаватели</h1>
+
+        <div class="search-container">
+            <%= form_tag teachers_path, method: :get, class: "search-form" do %>
+                <%= button_tag type: "submit", class: "search-button" do %>
+                    <i class="bi bi-search"></i>
+                <% end %>
+                <%= text_field_tag :search, params[:search], 
+                    placeholder: "Найти преподавателя", 
+                    class: "search-input", 
+                    aria_label: "search" %>
+            <% end %>
+        </div>
+
+        <div class="teachers-list">
+            <% @teachers.each do |teacher| %>
+                <%= link_to teacher_schedules_path(id: teacher.id), class: "teacher-card", data: { turbo: false } do %>
+                    <div class="teacher-info">
+                        <span class="teacher-name"><%= teacher.full_name %></span>
+                        <span class="teacher-post"><%= teacher.post %></span>
+                    </div>
+                    <i class="bi bi-chevron-right arrow-icon"></i>
+                <% end %>
+            <% end %>
+        </div>
+    </div>
 </div>
-<!-- Меню внизу экрана -->
-<div class="menu-container">
-    <h5 class="text-dark">Список преподавателей</h5>
-    <% @teachers.each do |teacher| %>
-        <%= link_to teacher_schedules_path(id: teacher.id), class: "text-decoration-none text-dark" do %>
-            <div class="menu-item">
-                <span class="menu-item-text"><%= teacher.full_name %></span>
-                <span class="menu-item-number"><%= teacher.post %></span>
-            </div>
-        <% end %>
-    <% end %>
-</div>
+
+<script>
+(function() {
+    // --- Background Animation (Copied from show.html.erb) ---
+    function RoundedRectGeometry(width, height, radius) {
+        const shape = new THREE.Shape();
+        const x = -width / 2, y = -height / 2;
+        shape.moveTo(x, y + radius);
+        shape.lineTo(x, y + height - radius);
+        shape.quadraticCurveTo(x, y + height, x + radius, y + height);
+        shape.lineTo(x + width - radius, y + height);
+        shape.quadraticCurveTo(x + width, y, x + width, y + height - radius);
+        shape.lineTo(x + width, y + radius);
+        shape.quadraticCurveTo(x + width, y, x + width - radius, y);
+        shape.lineTo(x + radius, y);
+        shape.quadraticCurveTo(x, y, x, y + radius);
+        return new THREE.ShapeGeometry(shape);
+    }
+
+    const Engine = Matter.Engine,
+        World = Matter.World,
+        Bodies = Matter.Bodies,
+        Body = Matter.Body;
+
+    let camera, scene, renderer;
+    let particles = []; 
+
+    let engine, world;
+    let walls = [];
+
+    const PARTICLE_COUNT = 80; 
+    const PARTICLE_BASE_SIZE = 4;
+    const PHYSICS_RADIUS_MULTIPLIER = 0.5; 
+    const PHYSICS_RADIUS = PARTICLE_BASE_SIZE * PHYSICS_RADIUS_MULTIPLIER; 
+
+    const PARTICLE_COLOR = 0x8ab4f8; 
+
+    const ATTRACTION_RADIUS = 350; 
+    const ORBIT_RADIUS = 120; 
+    const FORCE_STRENGTH = 0.00005; 
+
+    const PULSE_SPEED = 0.003;
+    const PULSE_AMPLITUDE = 0.2; 
+
+    let mouse = new THREE.Vector2(-9999, -9999);
+    let mouseLight; 
+
+    function init() {
+        const canvas = document.getElementById('webgl-canvas');
+        if (!canvas) return;
+
+        if (renderer) renderer.dispose();
+        if (engine) Matter.Engine.clear(engine);
+
+        engine = Engine.create();
+        world = engine.world;
+        engine.world.gravity.y = 0; 
+
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff); 
+        
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
+
+        mouseLight = new THREE.PointLight(PARTICLE_COLOR, 1.5, 600);
+        mouseLight.position.set(0, 0, 100);
+        scene.add(mouseLight);
+
+        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.z = 400;
+
+        renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        resize();
+
+        createWalls();
+        createParticles();
+
+        document.addEventListener('mousemove', onMouseMove, false);
+        document.addEventListener('mouseleave', () => { 
+            mouse.set(-9999, -9999); 
+            if(mouseLight) mouseLight.intensity = 0; 
+        });
+        window.addEventListener('resize', resize, false);
+
+        animate();
+    }
+
+    function createWalls() {
+        if (walls.length > 0) World.remove(world, walls);
+        
+        const vFOV = THREE.MathUtils.degToRad(camera.fov);
+        const height = 2 * Math.tan(vFOV / 2) * camera.position.z;
+        const width = height * camera.aspect;
+        const wallThickness = 100;
+
+        walls = [
+            Bodies.rectangle(0, -height/2 - wallThickness/2, width + wallThickness*2, wallThickness, { isStatic: true, restitution: 0.8 }), 
+            Bodies.rectangle(0, height/2 + wallThickness/2, width + wallThickness*2, wallThickness, { isStatic: true, restitution: 0.8 }), 
+            Bodies.rectangle(width/2 + wallThickness/2, 0, wallThickness, height + wallThickness*2, { isStatic: true, restitution: 0.8 }), 
+            Bodies.rectangle(-width/2 - wallThickness/2, 0, wallThickness, height + wallThickness*2, { isStatic: true, restitution: 0.8 }) 
+        ];
+        World.add(world, walls);
+    }
+
+    function createParticles() {
+        const geometry = RoundedRectGeometry(1, 0.6, 0.25); 
+        const material = new THREE.MeshBasicMaterial({ color: PARTICLE_COLOR, transparent: true, opacity: 0.4, side: THREE.DoubleSide });
+        
+        const spawnRange = window.innerWidth / 3;
+
+        particles.forEach(p => {
+            scene.remove(p.mesh);
+            World.remove(world, p.body);
+        });
+        particles = [];
+
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const mesh = new THREE.Mesh(geometry, material.clone());
+            const baseScale = PARTICLE_BASE_SIZE * (0.8 + Math.random() * 0.4);
+            mesh.scale.set(baseScale, baseScale, baseScale);
+            scene.add(mesh);
+
+            const startX = (Math.random() - 0.5) * spawnRange;
+            const startY = (Math.random() - 0.5) * spawnRange;
+
+            const body = Bodies.circle(startX, startY, PHYSICS_RADIUS * baseScale, {
+                friction: 0,
+                frictionAir: 0.05, 
+                restitution: 0.5 
+            });
+            
+            Body.setAngle(body, Math.random() * Math.PI * 2);
+            Body.setVelocity(body, { x: (Math.random()-0.5)*2, y: (Math.random()-0.5)*2 });
+            
+            World.add(world, body);
+
+            particles.push({ mesh, body, baseScale });
+        }
+    }
+
+    function onMouseMove(event) {
+        const vec = new THREE.Vector3(
+            (event.clientX / window.innerWidth) * 2 - 1,
+            -(event.clientY / window.innerHeight) * 2 + 1,
+            0.5
+        );
+        vec.unproject(camera);
+        vec.sub(camera.position).normalize();
+        const distance = -camera.position.z / vec.z;
+        const pos = camera.position.clone().add(vec.multiplyScalar(distance));
+        mouse.set(pos.x, pos.y);
+    }
+
+    function resize() {
+        if (!camera || !renderer) return;
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        createWalls();
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        if (!engine || !scene || !camera || !renderer) return;
+
+        Engine.update(engine, 1000 / 60);
+
+        const now = Date.now();
+        const pulseFactor = 1 + Math.sin(now * PULSE_SPEED) * PULSE_AMPLITUDE;
+
+        if (mouse.x > -9000) {
+            mouseLight.position.x += (mouse.x - mouseLight.position.x) * 0.1;
+            mouseLight.position.y += (mouse.y - mouseLight.position.y) * 0.1;
+            mouseLight.intensity = 1.5;
+        }
+
+        particles.forEach(p => {
+            const dx = mouse.x - p.body.position.x;
+            const dy = mouse.y - p.body.position.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (mouse.x > -9000 && dist < ATTRACTION_RADIUS && dist > 1) {
+                const normalX = dx / dist;
+                const normalY = dy / dist;
+
+                const deltaFromOrbit = dist - ORBIT_RADIUS;
+
+                const forceMagnitude = deltaFromOrbit * FORCE_STRENGTH * p.body.mass;
+
+                Body.applyForce(p.body, p.body.position, {
+                    x: normalX * forceMagnitude,
+                    y: normalY * forceMagnitude
+                });
+            }
+
+            p.mesh.position.x = p.body.position.x;
+            p.mesh.position.y = p.body.position.y;
+            
+            if (!p.mesh.position.z) p.mesh.position.z = (Math.random() - 0.5) * 50;
+            
+            p.mesh.rotation.z = p.body.angle;
+
+            const currentScale = p.baseScale * pulseFactor;
+            p.mesh.scale.set(currentScale, currentScale, currentScale);
+        });
+
+        renderer.render(scene, camera);
+    }
+
+    function initAll() {
+        init();
+    }
+
+    document.addEventListener("turbo:load", initAll);
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+        initAll();
+    } else {
+        document.addEventListener("DOMContentLoaded", initAll);
+    }
+})();
+</script>
