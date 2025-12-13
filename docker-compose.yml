@@ -151,6 +151,14 @@ services:
       - RUBY_GC_OLDMALLOC_LIMIT=33554432
       - RUBY_GC_HEAP_INIT_SLOTS=10000
       - MALLOC_ARENA_MAX=2
+
+      - STR_PASSWORD=${STR_PASSWORD}
+      - FEBT_PASSWORD=${FEBT_PASSWORD}
+      - VTF_PASSWORD=${VTF_PASSWORD}
+      - ETF_PASSWORD=${ETF_PASSWORD}
+      - PGS_PASSWORD=${PGS_PASSWORD}
+      - MEH_PASSWORD=${MEH_PASSWORD}
+      - UPP_PASSWORD=${UPP_PASSWORD}
     volumes:
       - app-storage:/rails/storage
     depends_on:
@@ -195,6 +203,14 @@ services:
       - RUBY_GC_OLDMALLOC_LIMIT=33554432
       - RUBY_GC_HEAP_INIT_SLOTS=10000
       - MALLOC_ARENA_MAX=2
+
+      - STR_PASSWORD=${STR_PASSWORD}
+      - FEBT_PASSWORD=${FEBT_PASSWORD}  
+      - VTF_PASSWORD=${VTF_PASSWORD}
+      - ETF_PASSWORD=${ETF_PASSWORD}
+      - PGS_PASSWORD=${PGS_PASSWORD}
+      - MEH_PASSWORD=${MEH_PASSWORD}
+      - UPP_PASSWORD=${UPP_PASSWORD}
     volumes:
       - app-storage:/rails/storage
     depends_on:
@@ -239,6 +255,14 @@ services:
       - RUBY_GC_OLDMALLOC_LIMIT=33554432
       - RUBY_GC_HEAP_INIT_SLOTS=10000
       - MALLOC_ARENA_MAX=2
+
+      - STR_PASSWORD=${STR_PASSWORD}
+      - FEBT_PASSWORD=${FEBT_PASSWORD}
+      - VTF_PASSWORD=${VTF_PASSWORD}
+      - ETF_PASSWORD=${ETF_PASSWORD}
+      - PGS_PASSWORD=${PGS_PASSWORD}
+      - MEH_PASSWORD=${MEH_PASSWORD}
+      - UPP_PASSWORD=${UPP_PASSWORD}
     volumes:
       - app-storage:/rails/storage
     depends_on:
